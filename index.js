@@ -1,17 +1,26 @@
-let city = "Sydney";
-let API_key = "ad28f3a0557d8t5f574o89b184356e5a";
-let apiURL = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${API_key}`;
+function searchCity(city) {
+  let API_key = "ad28f3a0557d8t5f574o89b184356e5a";
+  let apiURL = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${API_key}`;
+  axios.get(apiURL).then(updateWeather);
+}
+
+function updateWeather(response) {
+  let temperature = Math.round(response.data.temperature.current);
+  let temperatureElement = document.querySelector("#current-temperature");
+  temperatureElement.innerHTML= `${temperature}°C`;
+
+  let cityElement = document.querySelector("#current-city");
+  cityElement.innerHTML = response.data.city;
+}
 
 function search(event) {
   event.preventDefault();
   let searchInputElement = document.querySelector("#search-input");
-  let cityElement = document.querySelector("#current-city");
-  cityElement.innerHTML = searchInputElement.value;
+  searchCity(searchInputElement.value); // ✅ fetch weather for typed city
 }
 
 function formatDate(date) {
   let minutes = date.getMinutes();
-  console.log(date.getMinutes);
   let hours = date.getHours();
   let day = date.getDay();
 
@@ -37,12 +46,14 @@ function formatDate(date) {
   return `${formattedDay} ${hours}:${minutes}`;
 }
 
+// ✅ Run once when page loads
+let currentDateElement = document.querySelector("#current-date");
+let currentDate = new Date();
+currentDateElement.innerHTML = formatDate(currentDate);
+
+// ✅ Add event listener
 let searchForm = document.querySelector("#search-form");
 searchForm.addEventListener("submit", search);
 
-let currentDateELement = document.querySelector("#current-date");
-let currentDate = new Date();
-
-currentDateELement.innerHTML = formatDate(currentDate);
-
-axios.get(apiURL).then(formatDate);
+// ✅ Default city on load
+searchCity("Sydney");
